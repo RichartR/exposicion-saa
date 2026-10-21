@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rendimiento, Costes y Viabilidad Financiera de la IA (2020-2026)</title>
+  <!-- Tipografías técnicas: IBM Plex Sans e IBM Plex Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js para visualización de datos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0c10;
+      --bg-secondary: #12151c;
+      --bg-tertiary: #181c26;
+      --border-color: #262c3a;
+      --text-main: #e2e8f0;
+      --text-muted: #8b95a5;
+      --accent-blue: #38bdf8;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-red: #ef4444;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Barra superior técnica */
+    header {
+      height: 44px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-emerald);
+      display: inline-block;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-control {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-control:hover {
+      background: #222836;
+      border-color: var(--accent-blue);
+    }
+
+    /* Contenedor principal */
+    main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slides-wrapper {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      overflow-y: auto;
+      padding: 32px 48px;
+    }
+
+    .slide {
+      display: none;
+      max-width: 1360px;
+      margin: 0 auto;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* Encabezados de diapositiva */
+    .slide-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .slide-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-main);
+    }
+
+    /* Cuerpo de diapositiva y rejillas */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* Paneles y tarjetas técnicas */
+    .panel {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+    }
+
+    .panel-title {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .chart-box {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 220px;
+    }
+
+    /* KPIs numéricos */
+    .kpi-card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+    }
+
+    .kpi-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .text-blue { color: var(--accent-blue); }
+    .text-amber { color: var(--accent-amber); }
+    .text-emerald { color: var(--accent-emerald); }
+    .text-red { color: var(--accent-red); }
+
+    /* Tablas técnicas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 9px 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--bg-tertiary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    td.num {
+      font-family: var(--font-mono);
+      text-align: right;
+    }
+
+    tr:nth-child(even) td {
+      background-color: rgba(255, 255, 255, 0.015);
+    }
+
+    /* Listas técnicas */
+    ul.tech-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    ul.tech-list li {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-main);
+      padding-left: 16px;
+      position: relative;
+    }
+
+    ul.tech-list li::before {
+      content: "▪";
+      position: absolute;
+      left: 0;
+      color: var(--accent-blue);
+      font-family: var(--font-mono);
+    }
+
+    /* Pie de diapositiva */
+    .slide-footer-note {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    /* Barra inferior de progreso */
+    footer {
+      height: 36px;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 4px;
+      background: var(--bg-tertiary);
+      margin: 0 24px;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-blue);
+      width: 12.5%;
+      transition: width 0.2s ease;
+    }
+
+    /* Enlaces bibliográficos */
+    .bib-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .bib-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .bib-item strong {
+      font-family: var(--font-mono);
+      color: var(--accent-blue);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .bib-item a {
+      color: var(--text-muted);
+      text-decoration: none;
+      word-break: break-all;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .bib-item a:hover {
+      color: var(--text-main);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de estado superior -->
+  <header>
+    <div class="header-left">
+      <span class="status-dot"></span>
+      <span>RICHART RUBIO BORRAS // ECONOMÍA Y PROGRESIÓN DE MODELOS DE IA (2020–2026)</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-control" onclick="prevSlide()">[←] ANT</button>
+      <button class="btn-control" onclick="nextSlide()">[→] SIG</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="slides-wrapper">
+
+      <!-- DIAPOSITIVA 1: PORTADA Y TESIS -->
+      <section class="slide active">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 01 // PLANTEAMIENTO Y TESIS TÉCNICA</div>
+            <h1 class="slide-title">Límites de Escalado, Déficit Financiero y el Giro hacia la IA Local</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="panel" style="padding: 28px; border-left: 4px solid var(--accent-blue);">
+            <div class="panel-title"><span>TEMA CENTRAL DE LA EXPOSICIÓN</span><span>OCTUBRE 2026</span></div>
+            <p style="font-size: 18px; line-height: 1.6; color: var(--text-main);">
+              Entre 2020 y 2026, el coste de entrenar un modelo de frontera se ha multiplicado por más de <strong>325 veces</strong> (de $4,6M en GPT-3 a $1.500M-$3.000M en la generación GPT-5/Astra), mientras el precio por token en API cayó un <strong>99,7%</strong> para capacidades equivalentes a 2023. Sin embargo, la última generación (<strong>Gemini 4 Argon, Claude Fable 5.1 y GPT-6 Astra</strong>) demuestra que, como mínimo, es razonable cuestionar la viabilidad del modelo Cloud.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="kpi-card">
+              <div class="kpi-label">MODELO 01 // GOOGLE</div>
+              <div class="kpi-value text-blue">Gemini 4 Argon</div>
+              <div class="kpi-sub">
+                Lanzamiento: 30 Sep / 13 Oct 2026 (API).<br>
+                Contexto: 1.048.576 tokens.<br>
+                Estrategia: Agresiva reducción de tarifa por token ($2/$10 intro, $4/$20 lista) y liderazgo en extracción documental y legal.
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">MODELO 02 // ANTHROPIC</div>
+              <div class="kpi-value text-amber">Claude Fable 5 / 5.1</div>
+              <div class="kpi-sub">
+                Lanzamiento: 1 Sep 2026 (Clase Mythos).<br>
+                Contexto: 1.000.000 tokens.<br>
+                Estrategia: Tarifa premium ($10/$50) compensada con recorte del 75% en lectura de caché ($0,25/1M) para agentes de código.
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">MODELO 03 // OPENAI</div>
+              <div class="kpi-value text-emerald">GPT-6 Astra</div>
+              <div class="kpi-sub">
+                Lanzamiento: 3 Sep 2026.<br>
+                Contexto: 1.050.000 tokens.<br>
+                Estrategia: Tarifa premium ($10/$50) enfocada en cómputo en tiempo de prueba, uso autónomo de ordenador y terminal.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>FUENTES: Artificial Analysis (Oct 2026), Epoch AI (Oct 2026), Documentación API Oficial (OpenAI, Anthropic, Google).</span>
+          <span>PULSA [→] O [ESPACIO] PARA AVANZAR</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 2: EVOLUCIÓN DE RENDIMIENTO -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 02 // RENDIMIENTO INTERGENERACIONAL</div>
+            <h1 class="slide-title">¿Salto Exponencial o Meseta? Techo común</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>EVOLUCIÓN DE CAPACIDAD GENERAL (ÍNDICE NORMALIZADO 2020–2026)</span>
+                <span>EPOCH ECI / AA INDEX</span>
+              </div>
+              <div class="chart-box">
+                <canvas id="chartPerfEvolution"></canvas>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">
+                <span>BENCHMARKS MULTIDOMINIO: ARGON 4 vs FABLE 5.1 vs ASTRA 6</span>
+                <span>OCT 2026 (%)</span>
+              </div>
+              <div class="chart-box">
+                <canvas id="chartBenchmarks2026"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="kpi-card">
+              <div class="kpi-label">EMPATE TÉCNICO EN LA CIMA</div>
+              <div class="kpi-value">53 / 100</div>
+              <div class="kpi-sub">Puntuación idéntica para <strong>Argon High, Fable 5.1 y Astra Max</strong> en el <em>Artificial Analysis Intelligence Index v4.3</em> (Oct 2026). En el índice ECI de Epoch AI: Argon (165), Fable 5.1 (165), Astra (166).</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">TENDENCIA LINEAL, NO EXPONENCIAL</div>
+              <div class="kpi-value text-amber">R² = 0,73</div>
+              <div class="kpi-sub">El análisis de series temporales del <em>Epoch Capabilities Index</em> confirma un crecimiento lineal (~16 unidades por periodo). Los benchmarks clásicos como MMLU (~99%) están saturados.</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">ESPECIALIZACIÓN POR TAREA</div>
+              <div class="kpi-value text-blue">13 / 19</div>
+              <div class="kpi-sub">Argon lidera en trabajo empresarial/legal (<em>Vals Index</em> 68,9%) y menor alucinación (15% vs 51% de Astra). Astra lidera en control de PC (<em>OSWorld 2.0</em> 72,6%) y Fable 5.1 en programación agéntica (Index: 70 vs 67).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>FUENTES: Artificial Analysis Index v4.3 (Oct 2026), Epoch Capabilities Index (Oct 2026), BenchLM, NeuralTrust AI.</span>
+          <span>DIAPOSITIVA 02 / 08</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 3: EVOLUCIÓN DE COSTES (ENTRENAMIENTO VS API) -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 03 // ECONOMÍA DE CÓMPUTO</div>
+            <h1 class="slide-title">La Paradoja del Coste: Entrenamiento Exponencial vs. Guerra de Tarifas API</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>COSTE ESTIMADO DE ENTRENAMIENTO (MILLONES USD, ESCALA LOG)</span>
+                <span>2020 – 2026</span>
+              </div>
+              <div class="chart-box">
+                <canvas id="chartTrainingCost"></canvas>
+              </div>
+            </div>
+
+            <div class="panel" style="justify-content: flex-start; gap: 14px;">
+              <div class="panel-title">
+                <span>COMPARATIVA DE PRECIOS API Y COSTE POR TAREA (OCT 2026)</span>
+                <span>USD ($)</span>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Métrica de Coste</th>
+                    <th>Gemini 4 Argon</th>
+                    <th>Claude Fable 5.1</th>
+                    <th>GPT-6 Astra</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Input / 1M tokens</strong></td>
+                    <td class="num text-emerald">$2,00 <span style="color:var(--text-muted)">($4 dic)</span></td>
+                    <td class="num">$10,00</td>
+                    <td class="num">$10,00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Output / 1M tokens</strong></td>
+                    <td class="num text-emerald">$10,00 <span style="color:var(--text-muted)">($20 dic)</span></td>
+                    <td class="num">$50,00</td>
+                    <td class="num">$50,00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Lectura Caché / 1M</strong></td>
+                    <td class="num text-emerald">$0,10 <span style="color:var(--text-muted)">($0,20 dic)</span></td>
+                    <td class="num text-amber">$0,25 <span style="color:var(--text-muted)">(-75%)</span></td>
+                    <td class="num">$1,00</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tokens salida / tarea (AA)</strong></td>
+                    <td class="num text-amber">~62.000 tok</td>
+                    <td class="num">Variable (Esfuerzo)</td>
+                    <td class="num text-emerald">~27.000 tok</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Coste medio / tarea (AA)</strong></td>
+                    <td class="num">$1,99 <span style="color:var(--text-muted)">($3,98 lista)</span></td>
+                    <td class="num">$3,07 / pto LiveBench</td>
+                    <td class="num">$3,26</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Revisión Repo (50K in/3K out)</strong></td>
+                    <td class="num text-emerald">$0,13</td>
+                    <td class="num">$0,65</td>
+                    <td class="num">$0,65</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <ul class="tech-list" style="margin-top: 6px;">
+                <li><strong>Caída de precios en gama media (300x):</strong> Alcanzar la inteligencia de GPT-4 (marzo 2023, $30/1M tokens) cuesta hoy <strong>$0,10/1M tokens</strong> (-99,7%, índice <em>TokenCost</em>).</li>
+                <li><strong>Inflación por razonamiento en los modelos más potentes:</strong> Los modelos de 2026 no bajan el coste total por consulta porque multiplican los tokens generados internamente y en bucles agénticos.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>FUENTES: Capital and Compute (Jul 2026), Visual Capitalist / Epoch AI, Statista, Vakati-Tech / LiveBench (Oct 2026).</span>
+          <span>DIAPOSITIVA 03 / 08</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 4: FINANZAS DE OPENAI Y ANTHROPIC -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 04 // AUDITORÍA FINANCIERA (PURE-PLAY LABS)</div>
+            <h1 class="slide-title">OpenAI y Anthropic: Ingresos Récord, Pérdidas Históricas</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>INGRESOS VS. PÉRDIDAS NETAS Y OPERATIVAS (MILES DE MILLONES USD)</span>
+                <span>2024 – 1H 2026</span>
+              </div>
+              <div class="chart-box">
+                <canvas id="chartFinancialsPure"></canvas>
+              </div>
+            </div>
+
+            <div class="panel" style="justify-content: flex-start; gap: 14px;">
+              <div class="panel-title">
+                <span>DESGLOSE CONTABLE VERIFICADO (INGRESOS, OPERACIÓN Y CARGOS EXTRAORDINARIOS)</span>
+                <span>OPENAI & ANTHROPIC</span>
+              </div>
+
+              <!-- TARJETA OPENAI -->
+              <div class="kpi-card" style="border-left: 3px solid var(--accent-emerald);">
+                <div class="kpi-label" style="color: var(--accent-emerald); font-weight: 700;">OPENAI // EJERCICIO FISCAL 2025 Y RITMO 2026</div>
+                <ul class="tech-list" style="margin-top: 8px;">
+                  <li><strong>Ingresos por ventas:</strong> <strong>$13.070M</strong> en 2025 (vs. $3.700M en 2024). A sep-2026 alcanza un <em>run-rate</em> proyectado de <strong>~$50.000M</strong>.</li>
+                  <li><strong>Gastos de actividad:</strong> <strong>$34.000M totales</strong> ($19.180M I+D, $7.500M infraestructura y $7.320M administración). De este total, <strong>$17.200M</strong> se pagaron a Microsoft por Azure.</li>
+                  <li><strong>Pérdida Operativa ($13.070M - $34.000M):</strong> <strong>-$20.920M</strong> (el negocio puro consume $2,60 por cada $1 ingresado).</li>
+                  <li><strong>Pérdida Neta Final:</strong> <strong>-$38.530M</strong> (se suman -$17.610M por compensación en acciones y cargos de reestructuración corporativa).</li>
+                </ul>
+              </div>
+
+              <!-- TARJETA ANTHROPIC -->
+              <div class="kpi-card" style="border-left: 3px solid var(--accent-amber);">
+                <div class="kpi-label" style="color: var(--accent-amber); font-weight: 700;">ANTHROPIC // FOLLETO S-1 ANTE LA SEC (1H 2026)</div>
+                <ul class="tech-list" style="margin-top: 8px;">
+                  <li><strong>Ingresos por ventas:</strong> <strong>$16.300M</strong> en el 1S 2026 (frente a $1.100M en 1S 2025). Subió a $16.800M solo en el Q3 2026.</li>
+                  <li><strong>Gasto en computación:</strong> <strong>$9.000M</strong> en servidores en 6 meses (vs. $2.300M en 1S 2025). Compromete &gt;$518.000M en contratos fijos de nube.</li>
+                  <li><strong>Pérdida Operativa base:</strong> En torno a <strong>-$8.100M</strong> anuales (excluyendo ajustes contables sobre capital).</li>
+                  <li><strong>Pérdida Neta Contable:</strong> <strong>-$80.700M</strong> en 1S 2026 (el 90% es un apunte contable de <strong>$72.000M</strong> por la revalorización de su deuda convertible para salir a bolsa, no efectivo quemado).</li>
+                </ul>
+              </div>
+            </div>
+
+        <div class="slide-footer-note">
+          <span>FUENTES: Wall Street Journal / Reuters (Folleto S-1 de Anthropic, Oct 2026), Financial Times (Oct 2026), Estados Financieros OpenAI (Jun 2026).</span>
+          <span>DIAPOSITIVA 04 / 08</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 5: EL CASO GOOGLE (ALPHABET) -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 05 // AUDITORÍA FINANCIERA (BIG TECH / CLOUD)</div>
+            <h1 class="slide-title">El Caso Google (Alphabet): Opacidad por Segmento y Drenaje de Caja</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="panel" style="background: rgba(56, 189, 248, 0.05); border-color: var(--accent-blue); padding: 14px 20px; flex-shrink: 0;">
+            <p style="font-size: 13.5px; line-height: 1.5;">
+              <strong class="text-blue">NOTA METODOLÓGICA (INFORMES SEC 10-Q):</strong> Alphabet Inc. no desglosa la cuenta de pérdidas y ganancias aislada de sus modelos <strong>Gemini</strong>. Los costes de investigación (Google DeepMind) y amortización de TPUs se diluyen entre Servicios y Cloud. Para evaluar su rentabilidad real en IA debemos contrastar el beneficio de <strong>Google Cloud</strong> frente al <strong>Gasto de Capital (CapEx)</strong> y el <strong>Flujo de Caja Libre (FCF)</strong> consolidado.
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>GOOGLE CLOUD INGRESOS VS. ALPHABET CAPEX Y FLUJO DE CAJA (Q2 2026, $B)</span>
+                <span>FORM 10-Q SEC</span>
+              </div>
+              <div class="chart-box">
+                <canvas id="chartGoogleFinance"></canvas>
+              </div>
+            </div>
+
+            <div class="grid-2" style="gap: 14px; align-content: stretch;">
+              <div class="kpi-card">
+                <div class="kpi-label">INGRESOS GOOGLE CLOUD (Q2 2026)</div>
+                <div class="kpi-value text-emerald">$24.800M</div>
+                <div class="kpi-sub">Crecimiento del <strong>+82% interanual</strong> (subiendo desde $20.000M en Q1 2026). Margen operativo del segmento: <strong>35,6%</strong> (~$8.830M de beneficio operativo). Backlog acumulado: $514.000M.</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">CAPEX TRIMESTRAL (Q2 2026)</div>
+                <div class="kpi-value text-amber">$44.920M</div>
+                <div class="kpi-sub">Casi el doble que los $22.500M del Q2 2025. Destinado masivamente a infraestructura de IA, servidores y TPUs.</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">GUÍA CAPEX ANUAL 2026</div>
+                <div class="kpi-value text-amber">$195B – $205B</div>
+                <div class="kpi-sub">Revisada al alza tras el Q2 (consenso previo de $188.000M). Los analistas proyectan hasta ~$330.000M para 2027.</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">FLUJO DE CAJA LIBRE (FCF Q2 2026)</div>
+                <div class="kpi-value text-red">-$5.900M</div>
+                <div class="kpi-sub"><strong>Primer FCF negativo de Alphabet desde 2004.</strong> La deuda a largo plazo se duplicó en 6 meses (de $46.500M a $98.200M) y las recompras de acciones cayeron a $0.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>FUENTES: Alphabet Form 10-Q (Q2 2026), InsiderFinance (Oct 2026), Admirals / Nasdaq Earnings Analysis (Oct 2026).</span>
+          <span>DIAPOSITIVA 05 / 08</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 6: EL AUGE DE LA IA LOCAL Y OPEN-WEIGHTS -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 06 // PARADIGMA LOCAL Y OPEN-WEIGHTS</div>
+            <h1 class="slide-title">Modelos Abiertos en 2026: Rendimiento en Hardware Local</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-title">
+                <span>ÍNDICE DE INTELIGENCIA: CERRADOS (CLOUD) VS. ABIERTOS (LOCAL/OPEN)</span>
+                <span>ARTIFICIAL ANALYSIS (2026)</span>
+              </div>
+              <div class="chart-box">
+                <canvas id="chartOpenVsClosed"></canvas>
+              </div>
+            </div>
+
+            <div class="panel" style="justify-content: flex-start; gap: 12px;">
+              <div class="panel-title">
+                <span>REQUISITOS DE HARDWARE Y VRAM PARA EJECUCIÓN LOCAL (CUANTIZACIÓN Q4)</span>
+                <span>ESPECIFICACIONES 2026</span>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Modelo Open-Weight</th>
+                    <th>Arquitectura</th>
+                    <th>VRAM Mín (4-bit)</th>
+                    <th>Hardware Objetivo Local</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Gemma 4 (26B MoE)</strong></td>
+                    <td>26B MoE (Google Open)</td>
+                    <td class="num text-emerald">16 – 18 GB</td>
+                    <td>1x RTX 4080 (16GB) / RTX 4090 / Mac M3 Pro</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Qwen 3.6 (35B-A3B)</strong></td>
+                    <td>35B MoE (Alibaba Open)</td>
+                    <td class="num text-emerald">14 – 24 GB</td>
+                    <td>1x RTX 4090 (24GB) / Estación de trabajo local</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Llama 4 Maverick</strong></td>
+                    <td>400B MoE (Meta Open)</td>
+                    <td class="num text-amber">~200+ GB</td>
+                    <td>Servidor On-Premise Multi-GPU / Mac Studio Ultra</td>
+                  </tr>
+                  <tr>
+                    <td><strong>DeepSeek V4 (Flash/Pro)</strong></td>
+                    <td>671B MoE (DeepSeek Open)</td>
+                    <td class="num text-red">160 GB / 920 GB</td>
+                    <td>Cluster corporativo de servidores</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <ul class="tech-list" style="margin-top: 4px;">
+<!-- BLOQUE EXPLICATIVO DE LA CUANTIZACIÓN Y EL DESPLIEGUE LOCAL -->
+              <div style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--accent-blue); letter-spacing: 1px;">
+                  CLAVE TÉCNICA: ¿CÓMO CABE UN MODELO AVANZADO EN HARDWARE LOCAL?
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                  
+                  <!-- Tarjeta 1: La compresión -->
+                  <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 10px 12px;">
+                    <strong style="color: var(--accent-emerald); font-family: var(--font-mono); font-size: 12px; display: block; margin-bottom: 4px;">
+                      1. Compresión 4-bit (Q4_K_M)
+                    </strong>
+                    <p style="font-size: 12px; line-height: 1.4; color: var(--text-muted);">
+                      Reduce la precisión numérica original (FP16 a 4 bits), <strong>recortando un ~72% del peso</strong> del modelo sin perder coherencia lógica ni capacidad de razonamiento.
+                    </p>
+                  </div>
+
+                  <!-- Tarjeta 2: El impacto en hardware -->
+                  <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 10px 12px;">
+                    <strong style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 12px; display: block; margin-bottom: 4px;">
+                      2. De Servidor a GPU Doméstica
+                    </strong>
+                    <p style="font-size: 12px; line-height: 1.4; color: var(--text-muted);">
+                      Un modelo que exigiría centros de datos caros (&gt;60 GB) pasa a necesitar solo <strong>16–24 GB de VRAM</strong>, ejecutándose en una única GPU comercial (RTX 4080/4090 o Mac M-Series).
+                    </p>
+                  </div>
+
+                  <!-- Tarjeta 3: Casos de uso y ROI -->
+                  <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 10px 12px;">
+                    <strong style="color: var(--accent-blue); font-family: var(--font-mono); font-size: 12px; display: block; margin-bottom: 4px;">
+                      3. Tareas Reales y Privacidad
+                    </strong>
+                    <p style="font-size: 12px; line-height: 1.4; color: var(--text-muted);">
+                      Resuelve el 80% del trabajo diario (as
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>FUENTES: Admix Software (May 2026), Layer3Labs (Oct 2026), Oflight Hardware Guide (2026), Kairos DS (Jun 2026).</span>
+          <span>DIAPOSITIVA 06 / 08</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 7: DEBATE Y VIABILIDAD DEL ECOSISTEMA -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 07 // SÍNTESIS Y PROSPECTIVA</div>
+            <h1 class="slide-title">¿Es Viable el Ecosistema Actual o el Futuro Será Local?</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="panel" style="border-top: 3px solid var(--accent-red); justify-content: flex-start; gap: 14px;">
+              <div class="panel-title">
+                <span>1. DIAGNÓSTICO DE VIABILIDAD DEL MODELO CLOUD FRONTIER</span>
+                <span class="text-red">INSOSTENIBLE EN EL ESTADO ACTUAL</span>
+              </div>
+              <ul class="tech-list">
+                <li style="font-size: 18px;"><strong>Rendimientos decrecientes del capital:</strong> Invertir $200.000M/año en CapEx (Alphabet) o comprometer $750.000M (Anthropic) para lograr avances lineales (+1 o +2 puntos en ECI) destruye el retorno sobre el capital invertido (ROIC).</li>
+                <li style="font-size: 18px;"><strong>Estandarización inmediata:</strong> La ventaja competitiva de un modelo de $2.000M de entrenamiento dura menos de 6 meses antes de que un modelo abierto (DeepSeek V4, Qwen 3.6) replique el 97% de su capacidad a una fracción del coste.</li>
+                <li style="font-size: 18px;"><strong>Alerta en el mercado:</strong> Las bolsas ya castigan a las empresas de servidores y chips (caídas del 5% al 7% en Oracle y CoreWeave). Los inversores no quieren financiar más un crecimiento que quema miles de millones sin dar beneficios.</li>
+              </ul>
+            </div>
+
+            <div class="panel" style="border-top: 3px solid var(--accent-emerald); justify-content: flex-start; gap: 14px;">
+              <div class="panel-title">
+                <span>2. ¿SERÁ LA IA LOCAL LO MÁS UTILIZADO?</span>
+                <span class="text-emerald">FUTURO HÍBRIDO (REGLA 80 / 20)</span>
+              </div>
+              <ul class="tech-list">
+                <li style="font-size: 18px;"><strong>Por qué el 80% del volumen irá a Local / On-Premise:</strong> Para clasificación, RAG empresarial, resumen, privacidad legal/médica y asistencia de código estándar, un modelo de 16–24 GB de VRAM (<em>Gemma 4 26B/31B</em> o <em>Qwen 3.6</em>) amortiza el hardware en meses frente a facturas cloud de $5.000–$25.000/mes.</li>
+                <li style="font-size: 18px;"><strong>Dónde sobrevivirá la Nube Propietaria (20% del volumen):</strong> Ninguna pyme o usuario doméstico puede alojar 1 TB de VRAM para correr modelos de 671B+ parámetros a máxima precisión ni mantener contextos activos de 1 millón de tokens para auditorías masivas o investigación científica (donde destacan Argon 4, Fable 5.1 y Astra 6).</li>
+                <li style="font-size: 18px;"><strong>Veredicto:</strong> El enrutamiento inteligente (<em>Model Routing</em>) ejecutará las tareas cotidianas en local/Edge y derivará únicamente los problemas de alta complejidad a las APIs de frontera.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="padding: 16px 20px;">
+            <div class="panel-title" style="margin-bottom: 8px;"><span>MATRIZ DE DECISIÓN ARQUITECTÓNICA (2026–2028)</span><span>RESUMEN EJECUTIVO</span></div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Carga de Trabajo</th>
+                  <th>Entorno Óptimo</th>
+                  <th>Modelos de Referencia</th>
+                  <th>Justificación Económica y Técnica</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>RAG Interno, Privacidad, Resumen, Código Diario</strong></td>
+                  <td class="text-emerald"><strong>100% Local / On-Premise</strong></td>
+                  <td>Gemma 4 (26B/31B Q4), Qwen 3.6</td>
+                  <td>16–24 GB VRAM (1 GPU). Coste por token $0, soberanía total del dato y latencia predecible.</td>
+                </tr>
+                <tr>
+                  <td><strong>Producción Masiva Sensible al Coste</strong></td>
+                  <td class="text-amber"><strong>Híbrido / Open-Weights API</strong></td>
+                  <td>DeepSeek V4, Llama 4, Argon 4</td>
+                  <td>10x a 178x más barato que Fable 5 / Astra ($0,14–$2,00/1M in) manteniendo >51 pts en AA Index.</td>
+                </tr>
+                <tr>
+                  <td><strong>Ingeniería Agéntica Crítica y Contexto 1M</strong></td>
+                  <td class="text-blue"><strong>Cloud Frontier API</strong></td>
+                  <td>Argon 4, Fable 5.1, Astra 6</td>
+                  <td>Pago por uso ($10/$50) justificado solo cuando un error cuesta más que la factura de inferencia.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>CONCLUSIÓN: La hegemonía del modelo único en la nube ha terminado; la eficiencia pasa por combinar modelos locales cuantizados con llamadas puntuales a la frontera.</span>
+          <span>DIAPOSITIVA 07 / 08</span>
+        </div>
+      </section>
+
+      <!-- DIAPOSITIVA 8: BIBLIOGRAFÍA Y FUENTES VERIFICADAS -->
+      <section class="slide">
+        <div class="slide-header">
+          <div>
+            <div class="slide-tag">SECCIÓN 08 // REFERENCIAS Y AUDITORÍA DE DATOS</div>
+            <h1 class="slide-title">Bibliografía y Fuentes de Datos Oficiales</h1>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="bib-grid">
+            <div class="bib-item">
+              <strong>[1] NeuralTrust AI (Oct 2026) — Gemini 4 Argon vs GPT-6 Astra</strong>
+              Precios API, tasas de alucinación, Vals Index, OSWorld 2.0 y Artificial Analysis Index.<br>
+              <a href="https://neuraltrust.ai/es/blog/gemini-4-argon-vs-gpt-6-astra" target="_blank">https://neuraltrust.ai/es/blog/gemini-4-argon-vs-gpt-6-astra</a>
+            </div>
+            <div class="bib-item">
+              <strong>[2] Gemma 4 Blog (Oct 2026) — Argon High frente a Astra Max</strong>
+              Comparativa de Artificial Analysis Intelligence Index (empate a 53), AutomationBench-AA y costes.<br>
+              <a href="https://gemma4-ai.com/es/blog/gemini-4-argon-vs-gpt-6-astra" target="_blank">https://gemma4-ai.com/es/blog/gemini-4-argon-vs-gpt-6-astra</a>
+            </div>
+            <div class="bib-item">
+              <strong>[3] Atoms.dev & Listify (Sep 2026) — Claude Fable 5.1 API & Benchmarks</strong>
+              Precios de Fable 5.1 ($10/$50, caché $0,25), Terminal-Bench Science y comparativa con Astra.<br>
+              <a href="https://atoms.dev/models/claude-fable-5-1" target="_blank">https://atoms.dev/models/claude-fable-5-1</a> | <a href="https://www.listify.cool/en/blog/claude-fable-5-1-guide" target="_blank">listify.cool/en/blog/claude-fable-5-1-guide</a>
+            </div>
+            <div class="bib-item">
+              <strong>[4] BenchLM & Vakati-Tech (Oct 2026) — Fable 5.1 vs Gemini 4 Argon</strong>
+              Resultados LiveBench, OSWorld 2.0 (41,7% vs 69,2%), FrontierMath v2 y coste por carga de trabajo.<br>
+              <a href="https://benchlm.ai/compare/claude-fable-5-1-vs-gemini-4-argon" target="_blank">https://benchlm.ai/compare/claude-fable-5-1-vs-gemini-4-argon</a> | <a href="https://www.vakati-tech.ai/compare/anthropic-claude-fable-5-1-vs-google-gemini-4-argon" target="_blank">vakati-tech.ai</a>
+            </div>
+            <div class="bib-item">
+              <strong>[5] Capital and Compute / Visual Capitalist / Statista — Costes de Entrenamiento</strong>
+              Costes de GPT-3 ($4,6M), PaLM ($3-12M), GPT-4 ($78-79M), Claude Fable 5 ($500M-$1B) y GPT-5 ($1,5B-$3B).<br>
+              <a href="https://capitalandcompute.net/blog/what-it-costs-to-train-ai-models-2026/" target="_blank">https://capitalandcompute.net/blog/what-it-costs-to-train-ai-models-2026/</a> | <a href="https://www.visualcapitalist.com/the-surging-cost-of-training-ai-models/" target="_blank">visualcapitalist.com</a>
+            </div>
+            <div class="bib-item">
+              <strong>[6] Where's Your Ed At & ScanX (Jun 2026) — Estados Financieros de OpenAI (2024–2026)</strong>
+              Ingresos 2024 ($3,7B) y 2025 ($13,07B), gastos ($34B), pérdida neta ($38,53B) y cash burn Q1 2026 ($3,7B).<br>
+              <a href="https://www.wheresyoured.at/exclusive-openai-financials/" target="_blank">https://www.wheresyoured.at/exclusive-openai-financials/</a>
+            </div>
+            <div class="bib-item">
+              <strong>[7] Admirals / Financial Times / Reuters (Oct 2026) — OpenAI $50B Run-Rate & AI Selloff</strong>
+              Run-rate anualizado de OpenAI a finales de septiembre de 2026 ($50.000M) y diferencias contables con Anthropic.<br>
+              <a href="https://admiralmarkets.com/analytics/traders-blog/openai-revenue-ai-selloff-october-2026" target="_blank">https://admiralmarkets.com/analytics/traders-blog/openai-revenue-ai-selloff-october-2026</a>
+            </div>
+            <div class="bib-item">
+              <strong>[8] Wall Street Journal / Reuters vía Livemint & The Standard (Oct 2026) — Anthropic S-1 IPO</strong>
+              Pérdida neta de Anthropic en 2025 ($42B) y 1H 2026 (>$80B), ingresos 1H 2026 ($16,3B) y previsión de cómputo ($750B).<br>
+              <a href="https://www.livemint.com/companies/news/anthropic-lost-over-80-billion-in-first-half-of-2026-on-track-to-spend-750-billion-for-computing-capacity-report-11792553728656.html" target="_blank">https://www.livemint.com/companies/news/anthropic-lost-over-80-billion...</a>
+            </div>
+            <div class="bib-item">
+              <strong>[9] InsiderFinance & Admirals (Oct 2026) — Alphabet Form 10-Q (Q2 2026) & Q3 Preview</strong>
+              Ingresos de Google Cloud ($24,8B, +82%), CapEx Q2 ($44,92B), guía 2026 ($195B-$205B) y FCF negativo (-$5,9B).<br>
+              <a href="https://www.insiderfinance.io/news/alphabet-q3-2026-earnings-preview" target="_blank">https://www.insiderfinance.io/news/alphabet-q3-2026-earnings-preview</a> | <a href="https://admiralmarkets.com/education/articles/shares/alphabet-stock-q3-2026-earnings-preview" target="_blank">admiralmarkets.com</a>
+            </div>
+            <div class="bib-item">
+              <strong>[10] Admix Software, Layer3Labs & Oflight (May–Oct 2026) — Modelos Locales y Requisitos VRAM</strong>
+              Benchmarks y VRAM para Gemma 4 (5–24GB Q4), Qwen 3.6 (14–24GB), Llama 4 Maverick y DeepSeek V4.<br>
+              <a href="https://admix.software/blog/open-source-ai-models-2026" target="_blank">https://admix.software/blog/open-source-ai-models-2026</a> | <a href="https://www.oflight.co.jp/en/columns/gemma4-hardware-requirements-local-ai-spec-2026" target="_blank">oflight.co.jp</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer-note">
+          <span>PRESENTACIÓN GENERADA PARA EXPOSICIÓN WEB // NAVEGACIÓN POR TECLADO O BOTONES SUPERIORES</span>
+          <span>DIAPOSITIVA 08 / 08</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Barra de progreso inferior -->
+  <footer>
+    <span id="slide-counter">SLIDE 01 / 08</span>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <span>CONTROLES: [←] [→] [ESPACIO] CAMBIAR SLIDE</span>
+  </footer>
+
+  <script>
+    // --- LÓGICA DE NAVEGACIÓN PURA ---
+    const slides = document.querySelectorAll('.slide');
+    const slideCounter = document.getElementById('slide-counter');
+    const progressFill = document.getElementById('progress-fill');
+    let currentSlide = 0;
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+      const num = String(currentSlide + 1).padStart(2, '0');
+      const total = String(slides.length).padStart(2, '0');
+      slideCounter.textContent = `SLIDE ${num} / ${total}`;
+      progressFill.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    updateSlide();
+
+    // --- CONFIGURACIÓN DE CHART.JS ---
+    Chart.defaults.color = '#8b95a5';
+    Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+    Chart.defaults.font.size = 11;
+    const gridColor = '#1e2430';
+
+    // 1. Gráfica Evolución de Capacidad (Slide 2 - Izquierda)
+    new Chart(document.getElementById('chartPerfEvolution'), {
+      type: 'line',
+      data: {
+        labels: ['2020 (GPT-3)', '2022 (PaLM)', '2023 (GPT-4 / Claude 2)', '2024 (GPT-4o / Sonnet 3.5)', '2025 (GPT-5 / Opus 4.8)', 'Oct 2026 (Argon 4 / Fable 5.1 / Astra 6)'],
+        datasets: [
+          {
+            label: 'OpenAI (GPT-3 → Astra 6)',
+            data: [38, 55, 100, 126, 150, 166],
+            borderColor: '#10b981',
+            backgroundColor: '#10b981',
+            borderWidth: 2,
+            tension: 0.15
+          },
+          {
+            label: 'Anthropic (Claude 1 → Fable 5.1)',
+            data: [null, null, 94, 128, 151, 165],
+            borderColor: '#f59e0b',
+            backgroundColor: '#f59e0b',
+            borderWidth: 2,
+            tension: 0.15
+          },
+          {
+            label: 'Google (PaLM → Gemini 4 Argon)',
+            data: [null, 62, 92, 122, 146, 165],
+            borderColor: '#38bdf8',
+            backgroundColor: '#38bdf8',
+            borderWidth: 2,
+            tension: 0.15
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { grid: { color: gridColor } },
+          y: {
+            grid: { color: gridColor },
+            title: { display: true, text: 'Índice de Capacidad (Escala ECI, Oct 2026 = 165-166)' }
+          }
+        }
+      }
+    });
+
+    // 2. Gráfica Benchmarks Multidominio 2026 (Slide 2 - Derecha)
+    new Chart(document.getElementById('chartBenchmarks2026'), {
+      type: 'bar',
+      data: {
+        labels: ['AA Intelligence Index (pts)', 'Vals Index (Empresa/Legal %)', 'OSWorld 2.0 (Uso PC %)', 'AutomationBench (%)', 'Terminal-Bench Science (%)'],
+        datasets: [
+          {
+            label: 'Gemini 4 Argon',
+            data: [53.0, 68.9, 69.2, 51.3, 57.6],
+            backgroundColor: '#38bdf8'
+          },
+          {
+            label: 'Claude Fable 5.1',
+            data: [53.0, 65.8, 41.7, 31.4, 52.6],
+            backgroundColor: '#f59e0b'
+          },
+          {
+            label: 'GPT-6 Astra',
+            data: [53.0, 63.1, 72.6, 41.4, 68.1],
+            backgroundColor: '#10b981'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: {
+          x: { grid: { color: gridColor } },
+          y: { grid: { color: gridColor }, beginAtZero: true, max: 85 }
+        }
+      }
+    });
+
+    // 3. Gráfica Coste de Entrenamiento en Escala Logarítmica (Slide 3)
+    new Chart(document.getElementById('chartTrainingCost'), {
+      type: 'bar',
+      data: {
+        labels: [
+          'GPT-3 (2020)',
+          'PaLM (2022)',
+          'GPT-4 (2023)',
+          'Grok-2 (2024)',
+          'Claude Fable 5 (2026 Est.)',
+          'GPT-5 / 5.6 Prog. (2025-26 Est.)'
+        ],
+        datasets: [{
+          label: 'Coste Estimado de Entrenamiento / Programa ($ Millones USD)',
+          data: [4.6, 7.5, 78.5, 107, 750, 2250],
+          backgroundColor: ['#38bdf8', '#38bdf8', '#10b981', '#8b95a5', '#f59e0b', '#ef4444'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                const raw = ctx.raw;
+                if (ctx.dataIndex === 4) return ' Rango estimado: $500M - $1.000M (Media: $750M)';
+                if (ctx.dataIndex === 5) return ' Rango programa total: $1.500M - $3.000M (Media: $2.250M)';
+                return ` $${raw} Millones USD`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: gridColor } },
+          y: {
+            type: 'logarithmic',
+            grid: { color: gridColor },
+            title: { display: true, text: 'Millones de USD (Escala Logarítmica)' }
+          }
+        }
+      }
+    });
+
+    // 4. Gráfica Finanzas OpenAI y Anthropic (Slide 4)
+    new Chart(document.getElementById('chartFinancialsPure'), {
+      type: 'bar',
+      data: {
+        labels: ['OpenAI (2024)', 'OpenAI (2025)', 'Anthropic (2025)', 'Anthropic (1H 2026 - 6 meses)'],
+        datasets: [
+          {
+            label: 'Ingresos Reconocidos ($B)',
+            data: [3.70, 13.07, 3.80, 16.30],
+            backgroundColor: '#10b981'
+          },
+          {
+            label: 'Pérdida Operativa / Infraestructura ($B)',
+            data: [-8.78, -20.92, -13.00, -9.00],
+            backgroundColor: '#f59e0b'
+          },
+          {
+            label: 'Pérdida Neta Total Contable ($B)',
+            data: [-5.09, -38.53, -42.00, -80.00],
+            backgroundColor: '#ef4444'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: {
+          x: { grid: { color: gridColor } },
+          y: {
+            grid: { color: gridColor },
+            title: { display: true, text: 'Miles de Millones USD ($B)' }
+          }
+        }
+      }
+    });
+
+    // 5. Gráfica Caso Google / Alphabet Q2 2026 (Corregida con signos contables reales)
+    new Chart(document.getElementById('chartGoogleFinance'), {
+      type: 'bar',
+      data: {
+        labels: [
+          'Google Cloud: Ingresos (+)',
+          'Google Cloud: Beneficio Op. (+)',
+          'Alphabet: Inversión en Chips/CapEx (-)',
+          'Alphabet: Flujo de Caja Libre (-)'
+        ],
+        datasets: [{
+          label: 'Impacto en Caja ($B) - Q2 2026',
+          // Los ingresos y beneficios van en positivo (+); el gasto de inversión y el déficit van en negativo (-)
+          data: [24.80, 8.83, -44.92, -5.90],
+          backgroundColor: [
+            '#10b981', // Verde: Entra dinero (Ingresos)
+            '#38bdf8', // Azul: Sobra de la operativa (Beneficio)
+            '#f59e0b', // Ámbar/Rojo: Dinero que sale a borbotones (Inversión CapEx)
+            '#ef4444'  // Rojo: Saldo negativo final en caja (FCF negativo)
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                const val = ctx.raw;
+                return val > 0 ? ` +$${val}B (Entrada / Beneficio)` : ` -$${Math.abs(val)}B (Salida / Pérdida)`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: gridColor } },
+          y: {
+            grid: { color: gridColor },
+            title: { display: true, text: 'Miles de Millones USD ($B)' }
+          }
+        }
+      }
+    });
+
+    // 6. Gráfica Cerrados vs Open-Weights (Slide 6)
+    new Chart(document.getElementById('chartOpenVsClosed'), {
+      type: 'bar',
+      data: {
+        labels: [
+          'GPT-6 Astra (Cerrado)',
+          'Claude Fable 5.1 (Cerrado)',
+          'Gemini 4 Argon (Cerrado)',
+          'Qwen 3.6 Max (Abierto/Local)',
+          'DeepSeek V4 Pro (Abierto/Local)',
+          'Llama 4 Maverick (Abierto/Local)'
+        ],
+        datasets: [
+          {
+            label: 'Artificial Analysis Intelligence Index (Puntos)',
+            data: [53.0, 53.0, 53.0, 51.8, 51.5, 44.0],
+            backgroundColor: ['#10b981', '#f59e0b', '#38bdf8', '#a855f7', '#ec4899', '#64748b']
+          }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: {
+          x: { grid: { color: gridColor }, beginAtZero: true, max: 60 },
+          y: { grid: { color: gridColor } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
